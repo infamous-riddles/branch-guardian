@@ -1,0 +1,11 @@
+name: "Build & Check action's code"
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - run: |
+        npm install
+        npm run all

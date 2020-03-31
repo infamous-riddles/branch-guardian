@@ -1,0 +1,26 @@
+name: 'Branch Guardian'
+description: 'Create and/or delete branch protection rules based on a supplied branch pattern.'
+author: 'Infamous Riddles'
+branding:
+  icon: 'git-branch'  
+  color: 'blue'
+inputs:
+  BASE-BRANCH-PATTERN:
+    description: 'The pattern of the base branch'
+  PERSONAL-ACCESS-TOKEN:
+    description: 'Personal access token to read branch protection rules'
+  RULES-LIMIT:
+    description: 'The number of branch protection rules to check in order to find and delete'
+    default: 100
+  REQUIRED-NUMBER-OF-REVIEWERS:
+    description: 'The number of required reviewers when creating a branch protection rule'
+    default: 1
+  REQUIRED-STATUS-CHECKS:
+    description: 'The status check that need to be successful before a PR can be merged.'
+  REQUIRE-REVIEW-FROM-CODEOWNERS:
+    description: 'Set to true if you need to require an approved review in pull requests including files with a designated code owner.'
+    default: 'false'
+    
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
