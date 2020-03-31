@@ -1,10 +1,14 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Branch rule creator'
+description: 'This action will check if the pushed branch is a base branch and will search to add a base branch rule.'
+author: 'charbgr, pavlospt'
 inputs:
-  myInput:              # change this
-    description: 'input description here'
+  base-branch-pattern:
+    description: 'The pattern of the base branch'
     default: 'default value if applicable'
+  repo-token:
+    description: 'Repository token'
+  personal-access-token:
+    description: 'Personal access token to read branch protection rules'
 runs:
   using: 'node12'
   main: 'dist/index.js'
