@@ -1,10 +1,7 @@
-name: "build-test"
-on: # rebuild any PRs and main branch changes
-  pull_request:
-  push:
-    branches:
-      - master
-      - 'releases/*'
+name: "pull_request"
+on: 
+    pull_request:
+        types: [closed]
 
 jobs:
   build: # make sure build/ci work properly
@@ -20,4 +17,5 @@ jobs:
     - uses: actions/checkout@v1
     - uses: ./
       with: 
-        milliseconds: 1000
+        base-branch-pattern: 'develop'
+        personal-access-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
