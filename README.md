@@ -2,7 +2,7 @@
 
 ![Build & Check action's code](https://github.com/infamous-riddles/branch-guardian/workflows/Build%20&%20Check%20action's%20code/badge.svg)
 
-This Github action automates the creation of branch protection rules. It can also hand branch protection rule deletion as well.
+This Github action automates the creation of branch protection rules. It can also handle branch protection rule deletion as well.
 
 In order to use the action, you need to generate a new personal access token from your Account's settings. This is needed because the default Github token provided for Github actions, does not have the required permissions to create/delete branch protection rules.
 
