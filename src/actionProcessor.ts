@@ -36,12 +36,17 @@ export class ActionProcessor {
     }
 
     if (refType !== ActionConstants.BRANCH_REF_TYPE) {
+      printDebug(
+        `RefType ${refType} did not match ${ActionConstants.BRANCH_REF_TYPE}`
+      )
       return Promise.resolve()
     }
 
     if (eventName === ActionConstants.CREATE_EVENT_NAME) {
+      printDebug('Initiating branch rule creation')
       return this.githubRepo.createBranchRule()
     } else if (eventName == ActionConstants.DELETE_EVENT_NAME) {
+      printDebug('Initiating branch rule deletion')
       return this.githubRepo.deleteBranchRule()
     }
   }

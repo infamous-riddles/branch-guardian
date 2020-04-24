@@ -8593,8 +8593,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(393));
-function printDebug(message = '', obj) {
-    core.debug(`${message}: ${JSON.stringify(obj)}`);
+function printDebug(message, obj) {
+    if (obj) {
+        core.debug(`${message}: ${JSON.stringify(obj)}`);
+    }
+    else {
+        core.debug(`${message}`);
+    }
 }
 exports.printDebug = printDebug;
 
@@ -8839,12 +8844,15 @@ class ActionProcessor {
                 return Promise.resolve();
             }
             if (refType !== constants_1.ActionConstants.BRANCH_REF_TYPE) {
+                utils_1.printDebug(`RefType ${refType} did not match ${constants_1.ActionConstants.BRANCH_REF_TYPE}`);
                 return Promise.resolve();
             }
             if (eventName === constants_1.ActionConstants.CREATE_EVENT_NAME) {
+                utils_1.printDebug("Initiating branch rule creation");
                 return this.githubRepo.createBranchRule();
             }
             else if (eventName == constants_1.ActionConstants.DELETE_EVENT_NAME) {
+                utils_1.printDebug("Initiating branch rule deletion");
                 return this.githubRepo.deleteBranchRule();
             }
         });
