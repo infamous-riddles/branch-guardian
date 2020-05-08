@@ -20,6 +20,21 @@ inputs:
   REQUIRE-REVIEW-FROM-CODEOWNERS:
     description: 'Set to true if you need to require an approved review in pull requests including files with a designated code owner.'
     default: 'false'
+  DISMISS-STALE-PR-APPROVALS-ON-NEW-COMMITS:
+    description: 'Set to true if you need new reviewable commits pushed to a matching branch to dismiss pull request review approvals.'
+    default: 'false'
+  REQUIRE-LINEAR-HISTORY:
+    description: 'Set to true if you need linear history on your Pull Requests.'
+    default: 'false'
+  ALLOW-FORCE-PUSHES:
+    description: 'Set to true if you want to permit force pushes for all users with push access.'
+    default: 'false'
+  ALLOW-DELETIONS:
+    description: 'Set to true if you want to allow users with push access to delete matching branches.'
+    default: 'false'
+  INCLUDE-ADMINISTRATORS:
+    description: 'Set to true if you want to enforce all configured restrictions for administrators, as well.'
+    default: 'false'
     
 runs:
   using: 'node12'
