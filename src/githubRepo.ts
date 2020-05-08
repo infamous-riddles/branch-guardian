@@ -37,6 +37,17 @@ export class RealGithubRepo extends GithubRepo {
   private requiredStatusChecks = core.getInput(
     ActionConstants.REQUIRED_STATUS_CHECKS
   )
+  private dismissStalePRApprovalsOnNewCommits = core.getInput(
+    ActionConstants.DISMISS_STALE_PR_APPROVALS_ON_NEW_COMMITS
+  )
+  private requireLinearHistory = core.getInput(
+    ActionConstants.REQUIRE_LINEAR_HISTORY
+  )
+  private allowForcePushes = core.getInput(ActionConstants.ALLOW_FORCE_PUSHES)
+  private allowDeletions = core.getInput(ActionConstants.ALLOW_DELETIONS)
+  private includeAdministratos = core.getInput(
+    ActionConstants.INCLUDE_ADMINISTRATORS
+  )
 
   private sanitizedStatusChecks = !this.requiredStatusChecks
     ? null
@@ -61,13 +72,17 @@ export class RealGithubRepo extends GithubRepo {
       repo: this.repo,
       branch: this.branch,
       required_status_checks: this.sanitizedStatusChecks,
-      enforce_admins: null,
+      enforce_admins: this.includeAdministratos === 'true',
+      required_linear_history: this.requireLinearHistory === 'true',
       required_pull_request_reviews: {
+        dismiss_stale_reviews:
+          this.dismissStalePRApprovalsOnNewCommits === 'true',
         required_approving_review_count: this.requiredNumberOfReviewers,
-        require_code_owner_reviews: this.requireReviewFromCodeowners == 'true'
+        require_code_owner_reviews: this.requireReviewFromCodeowners === 'true'
       },
       restrictions: null,
-      allow_deletions: true,
+      allow_deletions: this.allowDeletions === 'true',
+      allow_force_pushes: this.allowForcePushes === 'true',
       mediaType: {previews: ActionConstants.GRAPHQL_MEDIATYPE_PREVIEWS}
     })
 

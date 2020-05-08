@@ -402,6 +402,11 @@ exports.ActionConstants = {
     REQUIRED_NUMBER_OF_REVIEWERS: 'REQUIRED-NUMBER-OF-REVIEWERS',
     REQUIRED_STATUS_CHECKS: 'REQUIRED-STATUS-CHECKS',
     REQUIRE_REVIEW_FROM_CODEOWNERS: 'REQUIRE-REVIEW-FROM-CODEOWNERS',
+    DISMISS_STALE_PR_APPROVALS_ON_NEW_COMMITS: 'DISMISS-STALE-PR-APPROVALS-ON-NEW-COMMITS',
+    REQUIRE_LINEAR_HISTORY: 'REQUIRE-LINEAR-HISTORY',
+    ALLOW_FORCE_PUSHES: 'ALLOW-FORCE-PUSHES',
+    ALLOW_DELETIONS: 'ALLOW-DELETIONS',
+    INCLUDE_ADMINISTRATORS: 'INCLUDE-ADMINISTRATORS',
     // Event names
     CREATE_EVENT_NAME: 'create',
     DELETE_EVENT_NAME: 'delete',
@@ -8848,11 +8853,11 @@ class ActionProcessor {
                 return Promise.resolve();
             }
             if (eventName === constants_1.ActionConstants.CREATE_EVENT_NAME) {
-                utils_1.printDebug("Initiating branch rule creation");
+                utils_1.printDebug('Initiating branch rule creation');
                 return this.githubRepo.createBranchRule();
             }
             else if (eventName == constants_1.ActionConstants.DELETE_EVENT_NAME) {
-                utils_1.printDebug("Initiating branch rule deletion");
+                utils_1.printDebug('Initiating branch rule deletion');
                 return this.githubRepo.deleteBranchRule();
             }
         });
@@ -9034,6 +9039,11 @@ class RealGithubRepo extends GithubRepo {
         this.requiredNumberOfReviewers = parseInt(core.getInput(constants_1.ActionConstants.REQUIRED_NUMBER_OF_REVIEWERS));
         this.requireReviewFromCodeowners = core.getInput(constants_1.ActionConstants.REQUIRE_REVIEW_FROM_CODEOWNERS);
         this.requiredStatusChecks = core.getInput(constants_1.ActionConstants.REQUIRED_STATUS_CHECKS);
+        this.dismissStalePRApprovalsOnNewCommits = core.getInput(constants_1.ActionConstants.DISMISS_STALE_PR_APPROVALS_ON_NEW_COMMITS);
+        this.requireLinearHistory = core.getInput(constants_1.ActionConstants.REQUIRE_LINEAR_HISTORY);
+        this.allowForcePushes = core.getInput(constants_1.ActionConstants.ALLOW_FORCE_PUSHES);
+        this.allowDeletions = core.getInput(constants_1.ActionConstants.ALLOW_DELETIONS);
+        this.includeAdministratos = core.getInput(constants_1.ActionConstants.INCLUDE_ADMINISTRATORS);
         this.sanitizedStatusChecks = !this.requiredStatusChecks
             ? null
             : {
@@ -9056,13 +9066,16 @@ class RealGithubRepo extends GithubRepo {
                 repo: this.repo,
                 branch: this.branch,
                 required_status_checks: this.sanitizedStatusChecks,
-                enforce_admins: null,
+                enforce_admins: this.includeAdministratos === 'true',
+                required_linear_history: this.requireLinearHistory === 'true',
                 required_pull_request_reviews: {
+                    dismiss_stale_reviews: this.dismissStalePRApprovalsOnNewCommits === 'true',
                     required_approving_review_count: this.requiredNumberOfReviewers,
-                    require_code_owner_reviews: this.requireReviewFromCodeowners == 'true'
+                    require_code_owner_reviews: this.requireReviewFromCodeowners === 'true'
                 },
                 restrictions: null,
-                allow_deletions: true,
+                allow_deletions: this.allowDeletions === 'true',
+                allow_force_pushes: this.allowForcePushes === 'true',
                 mediaType: { previews: constants_1.ActionConstants.GRAPHQL_MEDIATYPE_PREVIEWS }
             });
             utils_1.printDebug('Updated protection', updateProtection);

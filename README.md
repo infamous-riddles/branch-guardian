@@ -25,6 +25,11 @@ protection rules on the main `feature` branch.
       | `REQUIRED-NUMBER-OF-REVIEWERS` | The number of required reviewers when creating a branch protection rule. Defaults to `1`. |
       | `REQUIRED-STATUS-CHECKS` | The status check that need to be successful before a PR can be merged. |
       | `REQUIRE-REVIEW-FROM-CODEOWNERS` | Set to true if you need to require an approved review in pull requests including files with a designated code owner. Defaults to `false`. |
+      | `DISMISS-STALE-PR-APPROVALS-ON-NEW-COMMITS` | Set to true if you need new reviewable commits pushed to a matching branch to dismiss pull request review approvals. |
+      | `REQUIRE-LINEAR-HISTORY` | Set to true if you need linear history on your Pull Requests. |
+      | `ALLOW-FORCE-PUSHES` | Set to true if you want to permit force pushes for all users with push access. |
+      | `ALLOW-DELETIONS` | Set to true if you want to allow users with push access to delete matching branches. |
+      | `INCLUDE-ADMINISTRATORS` | Set to true if you want to enforce all configured restrictions for administrators, as well. |
 
       A sample of rule branch creation can be found [here](.github/workflows/create.yml).
 
