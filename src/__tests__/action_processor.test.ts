@@ -1,7 +1,7 @@
-import {ActionProcessor} from '../actionProcessor'
+import {ActionProcessor} from '../action_processor'
 import {ActionConstants} from '../constants'
 import {mockInput} from './testutils'
-import {FakeGithubRepo} from './fakeGithubRepo'
+import {FakeGithubRepo} from './fake_github_repo'
 
 test('should not process action if pattern does not match for branch', () => {
   mockInput(
@@ -9,10 +9,8 @@ test('should not process action if pattern does not match for branch', () => {
     '^feature/[a-zA-Z0-9]+$'
   )
 
-  const createBranchRuleSpy = jest.fn().mockImplementationOnce(Promise.resolve)
-  FakeGithubRepo.prototype.createBranchRule = createBranchRuleSpy
-
   const fakeGithubRepo = new FakeGithubRepo('owner', 'repo', 'foo')
+  const createBranchRuleSpy = jest.spyOn(fakeGithubRepo, 'createBranchRule').mockResolvedValue()
   const actionProcessor = new ActionProcessor(fakeGithubRepo)
 
   actionProcessor.processAction(
@@ -30,10 +28,8 @@ test('should not process create action if pattern matches but reftype does not',
     '^feature/[a-zA-Z0-9]+$'
   )
 
-  const createBranchRuleSpy = jest.fn().mockImplementationOnce(Promise.resolve)
-  FakeGithubRepo.prototype.createBranchRule = createBranchRuleSpy
-
   const fakeGithubRepo = new FakeGithubRepo('owner', 'repo', 'foo')
+  const createBranchRuleSpy = jest.spyOn(fakeGithubRepo, 'createBranchRule').mockResolvedValue()
   const actionProcessor = new ActionProcessor(fakeGithubRepo)
 
   actionProcessor.processAction(
@@ -51,10 +47,8 @@ test('should not process delete action if pattern matches but reftype does not',
     '^feature/[a-zA-Z0-9]+$'
   )
 
-  const deleteBranchRuleSpy = jest.fn().mockImplementationOnce(Promise.resolve)
-  FakeGithubRepo.prototype.deleteBranchRule = deleteBranchRuleSpy
-
   const fakeGithubRepo = new FakeGithubRepo('owner', 'repo', 'foo')
+  const deleteBranchRuleSpy = jest.spyOn(fakeGithubRepo, 'deleteBranchRule').mockResolvedValue()
   const actionProcessor = new ActionProcessor(fakeGithubRepo)
 
   actionProcessor.processAction(
@@ -72,11 +66,9 @@ test('should process create action if pattern matches branch name', () => {
     '^feature/[a-zA-Z0-9]+$'
   )
 
-  const createBranchRuleSpy = jest.fn().mockImplementationOnce(Promise.resolve)
-  FakeGithubRepo.prototype.createBranchRule = createBranchRuleSpy
-
   const branchName = 'feature/foo'
-  const fakeGithubRepo = new FakeGithubRepo('owner', 'repo', branchName)
+  const fakeGithubRepo = new FakeGithubRepo('owner', 'repo', 'foo')
+  const createBranchRuleSpy = jest.spyOn(fakeGithubRepo, 'createBranchRule').mockResolvedValue()
   const actionProcessor = new ActionProcessor(fakeGithubRepo)
 
   actionProcessor.processAction(
@@ -94,11 +86,9 @@ test('should process delete action if pattern matches branch name', () => {
     '^feature/[a-zA-Z0-9]+$'
   )
 
-  const deleteBranchRuleSpy = jest.fn().mockImplementationOnce(Promise.resolve)
-  FakeGithubRepo.prototype.deleteBranchRule = deleteBranchRuleSpy
-
   const branchName = 'feature/foo'
-  const fakeGithubRepo = new FakeGithubRepo('owner', 'repo', branchName)
+  const fakeGithubRepo = new FakeGithubRepo('owner', 'repo', 'foo')
+  const deleteBranchRuleSpy = jest.spyOn(fakeGithubRepo, 'deleteBranchRule').mockResolvedValue()
   const actionProcessor = new ActionProcessor(fakeGithubRepo)
 
   actionProcessor.processAction(

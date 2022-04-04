@@ -1,7 +1,7 @@
 import * as github from '@actions/github'
 import {printDebug} from './utils'
-import {RealGithubRepo} from './githubRepo'
-import {ActionProcessor} from './actionProcessor'
+import {RealGithubRepo} from './github_repo'
+import {ActionProcessor} from './action_processor'
 
 async function run(): Promise<void> {
   const githubContext = github.context
