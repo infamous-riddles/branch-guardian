@@ -1,4 +1,4 @@
-import {GithubRepo} from '../githubRepo'
+import {GithubRepo} from '../github_repo'
 
 export class FakeGithubRepo extends GithubRepo {
   async createBranchRule(): Promise<void> {

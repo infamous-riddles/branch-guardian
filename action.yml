@@ -35,7 +35,16 @@ inputs:
   INCLUDE-ADMINISTRATORS:
     description: 'Set to true if you want to enforce all configured restrictions for administrators, as well.'
     default: 'false'
+  RESTRICTIONS-USERS:
+    description: 'List of users allowed to push on the protected branch.'
+    default: ''
+  RESTRICTIONS-TEAMS:
+    description: 'List of teams allowed to push on the protected branch.'
+    default: ''
+  RESTRICTIONS-APPS:
+    description: 'List of apps allowed to push on the protected branch.'
+    default: ''
     
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'

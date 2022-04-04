@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import {printDebug} from './utils'
 import {ActionConstants} from './constants'
-import {GithubRepo} from './githubRepo'
+import {GithubRepo} from './github_repo'
 
 export class ActionProcessor {
   private githubRepo: GithubRepo

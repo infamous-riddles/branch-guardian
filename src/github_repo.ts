@@ -1,9 +1,8 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import {graphql} from '@octokit/graphql'
 import {ActionConstants} from './constants'
 import {printDebug} from './utils'
-import {GraphQLQueryBuilders} from './graphQLQueryBuilders'
+import {GraphQLQueryBuilders} from './graphql_query_builders'
 
 export abstract class GithubRepo {
   readonly owner: string
@@ -16,8 +15,8 @@ export abstract class GithubRepo {
     this.branch = branch
   }
 
-  abstract async createBranchRule(): Promise<void>
-  abstract async deleteBranchRule(): Promise<void>
+  abstract createBranchRule(): Promise<void>
+  abstract deleteBranchRule(): Promise<void>
 }
 
 export class RealGithubRepo extends GithubRepo {
@@ -48,6 +47,12 @@ export class RealGithubRepo extends GithubRepo {
   private includeAdministratos = core.getInput(
     ActionConstants.INCLUDE_ADMINISTRATORS
   )
+  private restrictionUsers = core.getInput(ActionConstants.RESTRICTION_USERS)
+  private restrictionTeams = core.getInput(ActionConstants.RESTRICTION_TEAMS)
+  private restrictionApps = core.getInput(ActionConstants.RESTRICTION_APPS)
+
+  private areRestrictionsSet: boolean =
+    !!this.restrictionUsers && !!this.restrictionTeams
 
   private sanitizedStatusChecks = !this.requiredStatusChecks
     ? null
@@ -58,33 +63,45 @@ export class RealGithubRepo extends GithubRepo {
         strict: true
       }
 
-  private authedGraphQL = graphql.defaults({
+  private octokit = github.getOctokit(this.personalAccessToken)
+
+  private authedGraphQL = this.octokit.graphql.defaults({
     headers: {
       authorization: `${ActionConstants.GRAPHQL_AUTH_TOKEN_PREFIX} ${this.personalAccessToken}`
     }
   })
 
-  private octokit = new github.GitHub(this.personalAccessToken)
-
   async createBranchRule(): Promise<void> {
-    const updateProtection = await this.octokit.repos.updateBranchProtection({
-      owner: this.owner,
-      repo: this.repo,
-      branch: this.branch,
-      required_status_checks: this.sanitizedStatusChecks,
-      enforce_admins: this.includeAdministratos === 'true',
-      required_linear_history: this.requireLinearHistory === 'true',
-      required_pull_request_reviews: {
-        dismiss_stale_reviews:
-          this.dismissStalePRApprovalsOnNewCommits === 'true',
-        required_approving_review_count: this.requiredNumberOfReviewers,
-        require_code_owner_reviews: this.requireReviewFromCodeowners === 'true'
-      },
-      restrictions: null,
-      allow_deletions: this.allowDeletions === 'true',
-      allow_force_pushes: this.allowForcePushes === 'true',
-      mediaType: {previews: ActionConstants.GRAPHQL_MEDIATYPE_PREVIEWS}
-    })
+    const restrictions = !this.areRestrictionsSet
+      ? null
+      : {
+          users: this.restrictionUsers.split(',').map(user => user.trim()),
+          teams: this.restrictionTeams.split(',').map(team => team.trim()),
+          apps: this.restrictionApps.split(',').map(app => app.trim())
+        }
+
+    printDebug(`Restrictions created from branch: ${this.branch}`, restrictions)
+
+    const updateProtection =
+      await this.octokit.rest.repos.updateBranchProtection({
+        owner: this.owner,
+        repo: this.repo,
+        branch: this.branch,
+        required_status_checks: this.sanitizedStatusChecks,
+        enforce_admins: this.includeAdministratos === 'true',
+        required_linear_history: this.requireLinearHistory === 'true',
+        required_pull_request_reviews: {
+          dismiss_stale_reviews:
+            this.dismissStalePRApprovalsOnNewCommits === 'true',
+          required_approving_review_count: this.requiredNumberOfReviewers,
+          require_code_owner_reviews:
+            this.requireReviewFromCodeowners === 'true'
+        },
+        restrictions: restrictions,
+        allow_deletions: this.allowDeletions === 'true',
+        allow_force_pushes: this.allowForcePushes === 'true',
+        mediaType: {previews: ActionConstants.GRAPHQL_MEDIATYPE_PREVIEWS}
+      })
 
     printDebug('Updated protection', updateProtection)
 
@@ -99,7 +116,7 @@ export class RealGithubRepo extends GithubRepo {
   }
 
   async deleteBranchRule(): Promise<void> {
-    const branchProtectionRulesResponse = await this.authedGraphQL(
+    const {branchProtectionRulesResponse} = await this.authedGraphQL(
       GraphQLQueryBuilders.buildBranchProtectionRuleQuery(
         this.rulesLimit,
         this.owner,
@@ -120,10 +137,11 @@ export class RealGithubRepo extends GithubRepo {
       branchProtectionRulesResponse
     )
 
-    const rule = branchProtectionRulesResponse.repository.branchProtectionRules.edges.find(
-      (edge: {node: {id: string; pattern: string}}) =>
-        edge.node.pattern == this.branch
-    )
+    const rule =
+      branchProtectionRulesResponse.repository.branchProtectionRules.edges.find(
+        (edge: {node: {id: string; pattern: string}}) =>
+          edge.node.pattern == this.branch
+      )
 
     if (!rule) {
       printDebug(`Rule was not found in rules`, branchProtectionRulesResponse)

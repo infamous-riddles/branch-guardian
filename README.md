@@ -30,6 +30,9 @@ protection rules on the main `feature` branch.
       | `ALLOW-FORCE-PUSHES` | Set to true if you want to permit force pushes for all users with push access. |
       | `ALLOW-DELETIONS` | Set to true if you want to allow users with push access to delete matching branches. |
       | `INCLUDE-ADMINISTRATORS` | Set to true if you want to enforce all configured restrictions for administrators, as well. |
+      | `RESTRICTIONS-USERS` | List of users allowed to push on the protected branch. Defaults to `''`. |
+      | `RESTRICTIONS-TEAMS` | List of teams allowed to push on the protected branch. Defaults to `''`. |
+      | `RESTRICTIONS-APPS` | List of apps allowed to push on the protected branch. Defaults to `''`. |
 
       A sample of rule branch creation can be found [here](.github/workflows/create.yml).
 
